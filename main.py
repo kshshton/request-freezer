@@ -1,5 +1,5 @@
-import pprint
 from datetime import datetime, time, timedelta
+from pprint import pprint
 from typing import Optional
 
 import redis
@@ -9,14 +9,14 @@ import requests
 class Freezer:
     address: str = '127.0.0.1'
     port: int = 6379
-    db: int = 0
+    decode_responses: bool = True
     char_limit: int = 3000
 
     def __init__(self) -> None:
-        self.redis_client = redis.StrictRedis(
+        self.redis_client = redis.Redis(
             host=self.address,
             port=self.port,
-            db=self.db,
+            decode_responses=self.decode_responses
         )
 
     def _get_expire_time(self) -> int:
@@ -58,7 +58,7 @@ class Freezer:
 def main() -> None:
     freezer = Freezer()
     freezer.get_content_from_page("https://example.com/")
-    pprint.pprint(freezer.list_cached_websites())
+    pprint(freezer.list_cached_websites())
 
 
 if __name__ == "__main__":
