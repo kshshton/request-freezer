@@ -17,7 +17,8 @@ class Freezer:
     def _get_expire_time(self) -> int:
         now = datetime.now()
         next_day_midnight = datetime.combine(
-            now.date() + timedelta(days=1), time.min)
+            now.date() + timedelta(days=1), time.min
+        )
         expire_time = (next_day_midnight - now).total_seconds()
         return int(expire_time)
 
@@ -29,8 +30,7 @@ class Freezer:
             cached_page = self.redis_client.get(url)
             if not cached_page:
                 response = requests.get(url)
-                if not response.ok:
-                    return None
+                assert response.ok, "Bad response!"
                 self.redis_client.set(url, response.text)
                 expire_time = self._get_expire_time()
                 self.redis_client.expire(url, expire_time)
@@ -44,9 +44,7 @@ class Freezer:
     def get_content_from_page(self, url: str, char_limit: int = 3000) -> str:
         try:
             page_content = self.get_page_from_cache(url)
-
-            if page_content:
-                return page_content[:char_limit]
+            return page_content[:char_limit]
         except Exception as exception:
             logging.error(f"get_content_from_page: {str(exception)}")
 
