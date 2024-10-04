@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, time, timedelta
 from typing import Optional
 
@@ -24,25 +25,30 @@ class Freezer:
         return {key: self.redis_client.get(key) for key in self.redis_client.keys()}
 
     def get_page_from_cache(self, url: str) -> Optional[str]:
-        cached_page = self.redis_client.get(url)
-
-        if cached_page:
-            print("Loaded from cache!")
-            return cached_page.decode('utf-8')
-        else:
-            response = requests.get(url)
-
-            if response.ok:
+        try:
+            cached_page = self.redis_client.get(url)
+            if not cached_page:
+                response = requests.get(url)
+                if not response.ok:
+                    return None
                 self.redis_client.set(url, response.text)
                 expire_time = self._get_expire_time()
                 self.redis_client.expire(url, expire_time)
                 print("Saved!")
                 return response.text
-            else:
-                return None
+            print("Loaded from cache!")
+            return cached_page
+        except Exception as exception:
+            logging.error(f"get_page_from_cache: {str(exception)}")
 
     def get_content_from_page(self, url: str, char_limit: int = 3000) -> str:
-        page_content = self.get_page_from_cache(url)
+        try:
+            page_content = self.get_page_from_cache(url)
 
-        if page_content:
-            return page_content[:char_limit]
+            if page_content:
+                return page_content[:char_limit]
+        except Exception as exception:
+            logging.error(f"get_content_from_page: {str(exception)}")
+
+    def close_connection(self) -> None:
+        self.redis_client.close()
