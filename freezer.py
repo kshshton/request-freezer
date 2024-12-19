@@ -26,7 +26,7 @@ class Freezer:
         self.retry_delay = retry_delay
 
     @contextmanager
-    def stream_connection(self) -> Generator:
+    def connection(self) -> Generator:
         """
         Context manager to establish and close Redis connection
         Yields: 
@@ -77,9 +77,9 @@ class Freezer:
                 self.redis_client.set(url, response.text)
                 expire_time = self._get_expire_time()
                 self.redis_client.expire(url, expire_time)
-                print("Saved!")
+                logging.info("Saved!")
                 return response.text
-            print("Loaded from cache!")
+            logging.info("Loaded from cache!")
             return cached_page
         except Exception as e:
             logging.error(f"get_page_from_cache: {str(e)}")

@@ -5,7 +5,7 @@ from freezer import Freezer
 
 def main() -> None:
     freezer = Freezer(address='127.0.0.1', port=6379)
-    with freezer.stream_connection():
+    with freezer.connection():
         content = freezer.get_page_content("https://example.com/")
         soup = BeautifulSoup(content, "html.parser")
         title = soup.title.string

@@ -3,7 +3,7 @@ It reduces the number of requests sent while prototyping a web scrape to a minim
 
 ![example](examples/example.png)
 
-Cached value is held in memory until the end of the day to ensure that you can ping the website once a day:
+Cached value is held in memory until the end of the day to ensure that you can ping the endpoint once a day:
 ```python
 # expire_time = number of seconds to the next day
 self.redis_client.expire(url, expire_time)
