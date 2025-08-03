@@ -1,3 +1,5 @@
+## PoC
+
 `Freezer` is a basic class that will allow you to save text content of the website to the **Redis** database and vice versa.<br>
 It reduces the number of requests sent while prototyping a web scrape to a minimum.
 
